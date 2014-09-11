@@ -1,0 +1,120 @@
+# CMakeのバージョン
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+
+# プロジェクト名
+PROJECT(jexport C)
+# バージョン番号
+SET(serial "1.0.0")
+# 共有ライブラリのバージョン番号
+SET(soserial "1")
+
+# 固有のオプション
+set(MYPROJECT_C_FLAGS "-D_UNIX_GCC -DEXP_AVAILABLE_DISP_LINE")
+# リリースビルド用オプション
+SET(CMAKE_C_FLAGS_RELEASE "-DNDEBUG -Wall -O2 ${MYPROJECT_C_FLAGS}")
+# デバッグビルド用オプション
+SET(CMAKE_C_FLAGS_DEBUG "-g -O0 ${MYPROJECT_C_FLAGS}")
+# ビルドのタイプはリリース
+SET(CMAKE_BUILD_TYPE Release)
+#SET(CMAKE_BUILD_TYPE Debug)
+
+if(CMAKE_COMPILER_IS_GNUCC)
+  exec_program(
+    ${CMAKE_C_COMPILER}
+    ARGS                    --version
+    OUTPUT_VARIABLE _compiler_output)
+  string(REGEX REPLACE ".* ([0-9].[0-9]+.[0-9]+).*" "\\1"
+    gcc_compiler_version ${_compiler_output})
+  message(STATUS "C++ compiler version: ${gcc_compiler_version} [${CMAKE_C_COMPILER}]")
+
+  if(gcc_compiler_version STRGREATER "4.6.0")
+    set(NO_WARNING_FLAGS "-Wno-unused-label -Wno-unused-but-set-variable -Wno-address -Wno-unused-function -Wno-unused-variable")
+    SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${NO_WARNING_FLAGS}")
+    SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${NO_WARNING_FLAGS}")
+    message(STATUS "add gcc cflags")
+  endif()
+  #   message(FATAL_ERROR "foobar")
+  #   ...
+
+  # if(gcc_compiler_version VERSION_GREATER "4.5.99")
+endif()
+
+set(PLAT_DIR ./Platform/Sources)
+set(PLAT_SRC_DIR ./Platform/Sources)
+set(PLAT_PUBINC_DIR ./Platform/PublicHeaders)
+
+set(EXPLIB_DIR ./ExpLib)
+set(EXPLIB_SRC_DIR ${EXPLIB_DIR}/Sources)
+set(EXPLIB_INC_DIR ${EXPLIB_DIR}/Headers)
+set(EXPLIB_PUBINC_DIR ${EXPLIB_DIR}/PublicHeaders)
+
+set(EXPDIALIB_DIR ./ExpDiaLib)
+set(EXPDIALIB_SRC_DIR ${EXPDIALIB_DIR}/Sources)
+set(EXPDIALIB_VIEWSRC_DIR ${EXPDIALIB_DIR}/ViewSources)
+set(EXPDIALIB_INC_DIR ${EXPDIALIB_DIR}/Headers)
+set(EXPDIALIB_PUBINC_DIR ${EXPDIALIB_DIR}/PublicHeaders)
+set(EXPDIALIB_VIEWINC_DIR ${EXPDIALIB_DIR}/ViewHeaders)
+
+set(EXPTOKULIB_DIR ./ExpToku)
+set(EXPTOKULIB_SRC_DIR ${EXPTOKULIB_DIR}/Sources)
+set(EXPTOKULIB_INC_DIR ${EXPTOKULIB_DIR}/Headers)
+set(EXPTOKULIB_PUBINC_DIR ${EXPTOKULIB_DIR}/PublicHeaders)
+
+set(EXPMAPLIB_DIR ./RosenMap)
+set(EXPMAPLIB_SRC_DIR ${EXPMAPLIB_DIR}/Sources)
+set(EXPMAPLIB_INC_DIR ${EXPMAPLIB_DIR}/Headers)
+set(EXPMAPLIB_PUBINC_DIR ${EXPMAPLIB_DIR}/PublicHeaders)
+
+# set(TIMETABLELIB_SRC_DIR ./timetable/old_tt)
+# set(TIMETABLELIB_INC_DIR ./timetable/old_tt)
+set(DISPLINE_LIB_SRC_DIR ./DispLineLib)
+set(DISPLINE_LIB_INC_DIR ./DispLineLib)
+
+
+# ビルドするためにインクルードするヘッダーファイルの場所
+INCLUDE_DIRECTORIES("${PLAT_PUBINC_DIR}")
+INCLUDE_DIRECTORIES("${EXPLIB_INC_DIR}")
+INCLUDE_DIRECTORIES("${EXPLIB_PUBINC_DIR}")
+INCLUDE_DIRECTORIES("${EXPDIALIB_PUBINC_DIR}")
+INCLUDE_DIRECTORIES("${EXPDIALIB_INC_DIR}")
+INCLUDE_DIRECTORIES("${EXPDIALIB_VIEWINC_DIR}")
+INCLUDE_DIRECTORIES("${EXPTOKULIB_INC_DIR}")
+INCLUDE_DIRECTORIES("${EXPTOKULIB_PUBINC_DIR}")
+INCLUDE_DIRECTORIES("${EXPMAPLIB_INC_DIR}")
+INCLUDE_DIRECTORIES("${EXPMAPLIB_PUBINC_DIR}")
+INCLUDE_DIRECTORIES("${DISPLINE_LIB_INC_DIR}")
+INCLUDE_DIRECTORIES("timetable")
+
+file(GLOB SFILES timetable/*.c)
+set(EXPLIB_SRC_FILES ${EXPLIB_SRC_FILES} ${SFILES})
+
+file(GLOB SFILES ${PLAT_SRC_DIR}/*.c)
+set(EXPLIB_SRC_FILES ${EXPLIB_SRC_FILES} ${SFILES})
+
+file(GLOB SFILES ${EXPLIB_SRC_DIR}/*.c)
+set(EXPLIB_SRC_FILES ${EXPLIB_SRC_FILES} ${SFILES})
+
+file(GLOB SFILES ${EXPDIALIB_SRC_DIR}/*.c)
+set(EXPLIB_SRC_FILES ${EXPLIB_SRC_FILES} ${SFILES})
+
+file(GLOB SFILES ${EXPDIALIB_VIEWSRC_DIR}/*.c)
+set(EXPLIB_SRC_FILES ${EXPLIB_SRC_FILES} ${SFILES})
+
+file(GLOB SFILES ${EXPTOKULIB_SRC_DIR}/*.c)
+set(EXPLIB_SRC_FILES ${EXPLIB_SRC_FILES} ${SFILES})
+
+file(GLOB SFILES ${EXPMAPLIB_SRC_DIR}/*.c)
+set(EXPLIB_SRC_FILES ${EXPLIB_SRC_FILES} ${SFILES})
+
+file(GLOB SFILES ${DISPLINE_LIB_SRC_DIR}/*.c)
+set(EXPLIB_SRC_FILES ${EXPLIB_SRC_FILES} ${SFILES})
+
+
+# 共有ライブラリとしてビルド
+ADD_LIBRARY(jexport SHARED ${EXPLIB_SRC_FILES})
+# バージョン番号の適用
+SET_TARGET_PROPERTIES(jexport PROPERTIES VERSION ${serial} SOVERSION ${soserial})
+# 共有ライブラリのインストール指定
+INSTALL(TARGETS jexport LIBRARY DESTINATION lib)
+# 共有ライブラリ用ヘッダーファイルのインストール指定
+INSTALL(FILES jexport.h DESTINATION include)
