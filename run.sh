@@ -10,7 +10,6 @@ rm -rf temp
 set -e
 mkdir temp
 cd temp
-#revision=`LC_ALL=en_US.UTF8 svn info svn://$devtrac/coreengine/tags/$tag --username $user --password $pass |grep "Last Changed Rev"|sed -e "s/[^0-9]//g"`
 svn export --username $user --password $pass svn://$devtrac/coreengine/tags/$tag
 svn export --username $user --password $pass svn://$devtrac/coreengine/branches/branch_dspline 
 svn export --username $user --password $pass svn://$devtrac/timetable/trunk ./timetable
@@ -42,7 +41,7 @@ if [ -n $outputdir_name ];then
     yyyymmdd=$outputdir_name
 fi
 set +e
-#mkdir                      /home/samba/eee_doc/branch_dspline/lib/$yyyymmdd
+mkdir                      /home/samba/eee_doc/branch_dspline/lib/$yyyymmdd
 set -e
-#cp -af libjexport.so.1.0.0 /home/samba/eee_doc/branch_dspline/lib/$yyyymmdd/libjexport.so
+cp -af libjexport.so.1.0.0 /home/samba/eee_doc/branch_dspline/lib/$yyyymmdd/libjexport.so
 
