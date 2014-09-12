@@ -10,9 +10,9 @@ rm -rf temp
 set -e
 mkdir temp
 cd temp
-svn export --username $user --password $pass svn://$devtrac/coreengine/tags/$tag
-svn export --username $user --password $pass svn://$devtrac/coreengine/branches/branch_dspline 
-svn export --username $user --password $pass svn://$devtrac/timetable/trunk ./timetable
+svn export --no-auth-cache --username $user --password $pass svn://$devtrac/coreengine/tags/$tag
+svn export --no-auth-cache --username $user --password $pass svn://$devtrac/coreengine/branches/branch_dspline 
+svn export --no-auth-cache --username $user --password $pass svn://$devtrac/timetable/trunk ./timetable
 
 mv timetable branch_dspline/lib/timetable
 
