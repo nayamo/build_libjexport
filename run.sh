@@ -37,7 +37,7 @@ make
 chmod 777 *
 
 yyyymmdd=`echo $tag|sed -e "s/[^0-9]//g"`
-if [ -n $outputdir_name ];then
+if [ -n "$outputdir_name" ];then
     yyyymmdd=$outputdir_name
 fi
 set +e
